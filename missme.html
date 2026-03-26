@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For Nishi ❤️</title>
+    <style>
+        :root {
+            --dark-pink: #fb6f92;
+            --light-pink: #ffcad4;
+            --bg-color: #fff0f3;
+        }
+
+        /* Prevent scrolling/bouncing on mobile */
+        html, body {
+            overflow: hidden;
+            overscroll-behavior: none;
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-color);
+            font-family: 'Arial', sans-serif;
+        }
+
+        #game-container {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            z-index: 10;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        h1 {
+            color: var(--dark-pink);
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+        }
+
+        .btn-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            height: 100px;
+            position: relative;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            touch-action: manipulation; /* Optimizes for mobile taps */
+        }
+
+        #yesBtn {
+            background-color: var(--dark-pink);
+            color: white;
+            z-index: 20;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #noBtn {
+            background-color: var(--light-pink);
+            color: var(--dark-pink);
+            position: fixed; /* Use fixed for better mobile screen accuracy */
+            transition: 0.15s ease;
+            z-index: 15;
+        }
+
+        .hidden { display: none !important; }
+
+        .success-msg {
+            color: var(--dark-pink);
+            text-align: center;
+            animation: grow 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes grow {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h1 id="headline">Do you miss me, Nishi? 🥺</h1>
+        <div class="btn-wrapper">
+            <button id="yesBtn">YES</button>
+            <button id="noBtn">No</button>
+        </div>
+    </div>
+
+    <div id="final-screen" class="hidden">
+        <h1 class="success-msg">I KNEW IT! ❤️</h1>
+        <p style="color: #fb6f92; font-size: 1.3rem; text-align: center;">I miss you more, Nishi!</p>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const headline = document.getElementById('headline');
+        const gameContainer = document.getElementById('game-container');
+        const finalScreen = document.getElementById('final-screen');
+
+        let yesScale = 1;
+
+        // Initial setup for the No button position
+        function initPosition() {
+            const rect = yesBtn.getBoundingClientRect();
+            // Offset it to the right of the Yes button
+            noBtn.style.left = (rect.right + 20) + 'px';
+            noBtn.style.top = rect.top + 'px';
+        }
+
+        window.onload = initPosition;
+        window.onresize = initPosition;
+
+        const moveNoButton = (e) => {
+            // Prevent the actual click/tap from happening
+            if(e) e.preventDefault();
+
+            // Calculate bounds to keep button on screen
+            const padding = 80;
+            const newX = Math.random() * (window.innerWidth - padding);
+            const newY = Math.random() * (window.innerHeight - padding);
+
+            noBtn.style.left = `${newX}px`;
+            noBtn.style.top = `${newY}px`;
+
+            // Grow the Yes button
+            yesScale += 0.25;
+            yesBtn.style.transform = `scale(${yesScale})`;
+
+            // Update text
+            const phrases = ["Try again, Nishi!", "Nope! 😋", "Close, but no!", "Just click YES!"];
+            headline.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+            
+            createHeart('💔');
+        };
+
+        // DESKTOP: Moves when mouse touches it
+        noBtn.addEventListener('mouseover', moveNoButton);
+        
+        // MOBILE: Moves the instant a finger touches it
+        noBtn.addEventListener('touchstart', (e) => {
+            moveNoButton(e);
+        });
+
+        // SAFETY: If she somehow manages to click/tap it
+        noBtn.addEventListener('click', (e) => {
+            moveNoButton(e);
+        });
+
+        yesBtn.addEventListener('click', () => {
+            gameContainer.classList.add('hidden');
+            noBtn.classList.add('hidden');
+            finalScreen.classList.remove('hidden');
+            
+            // Celebration!
+            setInterval(() => createHeart('❤️'), 250);
+        });
+
+        function createHeart(emoji) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerText = emoji;
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.top = '110vh';
+            
+            document.body.appendChild(heart);
+
+            // Animate up
+            setTimeout(() => {
+                heart.style.transition = `all ${Math.random() * 2 + 2}s ease-out`;
+                heart.style.transform = `translateY(-120vh) rotate(${Math.random() * 360}deg)`;
+                heart.style.opacity = '0';
+            }, 50);
+
+            setTimeout(() => heart.remove(), 4000);
+        }
+    </script>
+</body>
+</html>
